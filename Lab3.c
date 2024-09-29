@@ -44,10 +44,10 @@ int main()
                             {9, 9, 9, 9, 9, 9, 9, 9, 96, 108, 120, 132, 0, 1, 2, 3},
                             {9, 9, 9, 9, 9, 9, 9, 9, 96, 108, 120, 132, 0, 1, 2, 3}};
     
-    int window[WINDOW_R][WINDOW_C] = {{9, 9, 9, 9, 9, 9, 9, 9},
-                                    {9, 9, 9, 9, 9, 9, 9, 9},
-                                    {9, 9, 9, 9, 9, 9, 9, 9},
-                                    {9, 9, 9, 9, 9, 9, 9, 9}};
+    int window[WINDOW_R][WINDOW_C] = {{9, 9, 9, 9,9, 9, 9, 9},
+                                    {9, 9, 9, 9,9, 9, 9, 9},
+                                    {9, 9, 9, 9,9, 9, 9, 9},
+                                    {9, 9, 9, 9,9, 9, 9, 9}};
     
 
     //16x16
@@ -87,7 +87,7 @@ int main()
     int Uminbound = 0; //s1
     
     //to exit
-    int countforexit = -1;
+    int countforexit = 0;
     int check[1000];
     int sumforexit = 0;
     int A, B, C, D;
@@ -107,28 +107,26 @@ int main()
     
     while(exit == false && countforexit != 999){
     
-    A = y1 * 1000;
-    B = y2 * 100;
-    C = x1 * 10;
-    D = x2 * 1;
+    A = y1 * 1024;
+    B = y2 * 128;
+    C = x1 * 16;
+    D = x2;
     
-    countforexit++;
     check[countforexit] = 0;
+    countforexit++;
     sumforexit = A + B + C + D;
         
     //reach the middle
-    for (int i = 0; i < countforexit + 1; i++) {
+    for (int i = 0; i < countforexit; i++) {
     
     if (check[i] == sumforexit){
         exit = true;
-        if(right){x1--;x2--;}
-        if(down){y1--;y2--;}
-        if(left){x1++;x2++;}
-        if(up){y1++;y2++;}
+       // if(up == true){printf("..\n");}
+        break;
     }
     }//for
     
-    check[countforexit] = sumforexit;
+    check[countforexit - 1] = sumforexit;
         
     //calclating SAD
     SAD = 0;
@@ -213,6 +211,12 @@ int main()
         
         
     }//while
+    
+    //return center block to print it
+    if(right){x1--;x2--;}
+    if(down){y1--;y2--;}
+    if(left){x1++;x2++;}
+    if(up){y1++;y2++;}
     
     //current x, y position
     printf("position of the box corners\n");
