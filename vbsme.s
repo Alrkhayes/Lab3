@@ -27,7 +27,7 @@ frame0:  .word    0,  0,  1,  2,
          .word    0,  0,  0,  0
          .word    0,  0,  0,  0, 
 window0: .word    1,  2, 
-         .word    3,  4, 
+         .word    3,  4,
 # test 1 For the 16X16 frame size and 4X4 window size
 # The result should be 12, 12
 asize1:  .word    16, 16, 4, 4    #i, j, k, l
@@ -796,7 +796,7 @@ check: .word 1:1000
 .text
 
 #Setting minSAD to a large number
-addi, s0, $zero, 1000 #minSAD = 1000
+addi, $s0, $zero, 1000 #minSAD = 1000
 
 la $s1, bound #Gettign the bound 
 
@@ -823,23 +823,23 @@ sw $t0, 12($s2) #block[3] = W_C
 la $s3, index #Gettign the index
 la $s4, bool #Gettign the bool
 
-lw t0, 4($a0) #t0 = F_C
-lw t1, 12($a0) #t1 = W_C
-add t2, $zero, $zero #t2 = 0
-slt t2, t1, t0	#if(W_C < F_C)
-beq t2, $zero, ifnotright
-sw t2, 4($s4) #bool[1] = 1
+add $s5, $zero,$zero #count
+la $s6, check #Gettign the check
+
+lw $t0, 4($a0) #t0 = F_C
+lw $t1, 12($a0) #t1 = W_C
+add $t2, $zero, $zero #t2 = 0
+slt $t2, $t1, $t0 #if(W_C < F_C)
+beq $t2, $zero, ifnotright
+sw $t2, 4($s4) #bool[1] = 1
 j while
 
 ifnotright:
-lw t0, 0($a0) #t0 = F_R
-lw t1, 8($a0) #t1 = W_R
-slt t2, t1, t0	#if(W_R < F_R)
-beq t2, $zero, while
-sw t2, 8($s4) #bool[2] = 1
-
-add $s5, $zero,$zero #count
-la $s6, check #Gettign the check
+lw $t0, 0($a0) #t0 = F_R
+lw $t1, 8($a0) #t1 = W_R
+slt $t2, $t1, $t0 #if(W_R < F_R)
+beq $t2, $zero, while
+sw $t2, 8($s4) #bool[2] = 1
 
 
 while:
@@ -849,9 +849,9 @@ lw $t1, 4($s2)
 lw $t2, 8($s2)
 lw $t3, 12($s2)
 
-mult $t0, 1000
-mult $t0, 100
-mult $t0, 10
+sll $t0, $t0, 10
+sll $t1, $t1, 7
+sll $t2, $t2, 4
 
 sll $t4, $s5, 2
 add $t4, $t4, $s6 #&check[count]
@@ -874,7 +874,7 @@ sw $t6, 0($s4)
 j exitloop1
 loop1_1:
 slt $t7, $t0, $t1 
-bnq $t7, $zero, exitloop1
+beq $t7, $zero, exitloop1
 addi $t0, $t0, 1
 j loop1
 
@@ -885,24 +885,27 @@ lw $t0 0($s2) #y1
 lw $t1 8($s2) #x1
 add $t7, $zero, $zero
 add $t2, $zero, $zero
+add $s7, $zero, $zero
 loop2:
-lw $t4, 3($s2) #y2
-addi $t4, $t4, 1
+lw $t4, 4($s2) #y2
+addi $t4, $t4, 1 #y2+1
 beq $t0, $t4, exitloop2
+
 # array[R][C] = (R * Array_C + (C + 1)) * 4 
-addi $t4, $t1, 1 #x1++
-lw $t3, 4($a1) #Get F_C
-mult $t3, $t0 #y1 * F_C
-add $t3, $t3, $t4 #(y1 *  F_C + (x1 + 1)
-sll $t3, $t3, 2  #(y1 *  F_C + (x1 + 1) * 4
+#addi $t4, $t1, 1 #x1++
+lw $t3, 4($a0) #Get F_C
+mul $t3,$t3,$t0 #y1 * F_C
+add $t3, $t3, $t1 #(y1 *  F_C + x1)
+sll $t3, $t3, 2  #(y1 *  F_C + x1) * 4
 add $t3, $t3, $a1 #&frame[i]
 lw $t5, 0($t3) 
 
-#t3, $t4, $t6
-sub $t3, $t3, $t0 
-add $t4, $t3, $a1 #&window[i]
+sll $t3, $s7, 2
+add $t4, $t3, $a2 #&window[i]
 lw $t6, 0($t4)
 
+#abs
+sub $t6, $t5, $t6
 sra $t5,$t6,31   
 xor $t6,$t6,$t5   
 sub $t6,$t6,$t5
@@ -913,11 +916,13 @@ slti $t5, $t2, 3
 beq $t5, $zero, loop2_1 #if(count == 3)
 addi $t1, $t1, 1
 addi $t2, $t2, 1
+addi $s7, $s7, 1
 j loop2
 loop2_1:
 add $t2, $zero, $zero
 addi $t0, $t0, 1
 lw $t1 8($s2) #x1
+addi $s7, $s7, 1
 j loop2
 
 exitloop2:
@@ -931,5 +936,3 @@ beq $t0, $zero, while
 jr $ra
 
 
-
-   
