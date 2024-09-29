@@ -782,9 +782,9 @@ vbsme:
     
     
     
- # array[R][C] = (R * Array_C + C) * array size 
+ # array[R][C] = (R * Array_C + (C + 1)) * 4 
  # exmple of 4x4 array 
- # array[2][2] = (2 * 4 + 2) * 4 = 40 --> which is the 10th element
+ # array[2][2] = (2 * 4 + 3) * 4 = 44 --> which is the 11th element
  
  .data
 bound: .word 0, 0, -1, 0 #s1 = Rmaxbound, Dmaxbound, Lminbound, Uminbound 
@@ -838,9 +838,97 @@ slt t2, t1, t0	#if(W_R < F_R)
 beq t2, $zero, while
 sw t2, 8($s4) #bool[2] = 1
 
+add $s5, $zero,$zero #count
+la $s6, check #Gettign the check
+
+
 while:
 
+lw $t0, 0($s2)
+lw $t1, 4($s2)
+lw $t2, 8($s2)
+lw $t3, 12($s2)
 
+mult $t0, 1000
+mult $t0, 100
+mult $t0, 10
+
+sll $t4, $s5, 2
+add $t4, $t4, $s6 #&check[count]
+sw $zero, 0($t4) #check[count] = 0
+addi $s5, $s5, 1 #count++
+
+add $t5, $t0, $t1
+add $t5, $t5, $t2
+add $t5, $t5, $t3 #sum
+
+add $t0, $zero, $zero #i = 0
+add $t1, $s5, $zero #i = count
+loop1:
+sll $t2, $t0, 2 
+add $t2, $t2, $s6 #&check[i]
+lw $t3, 0($t2)
+bne $t5, $t3, loop1_1
+addi $t6, $zero, 1
+sw $t6, 0($s4) 
+j exitloop1
+loop1_1:
+slt $t7, $t0, $t1 
+bnq $t7, $zero, exitloop1
+addi $t0, $t0, 1
+j loop1
+
+exitloop1:
+sw $t5, 0($t4)
+
+lw $t0 0($s2) #y1
+lw $t1 8($s2) #x1
+add $t7, $zero, $zero
+add $t2, $zero, $zero
+loop2:
+lw $t4, 3($s2) #y2
+addi $t4, $t4, 1
+beq $t0, $t4, exitloop2
+# array[R][C] = (R * Array_C + (C + 1)) * 4 
+addi $t4, $t1, 1 #x1++
+lw $t3, 4($a1) #Get F_C
+mult $t3, $t0 #y1 * F_C
+add $t3, $t3, $t4 #(y1 *  F_C + (x1 + 1)
+sll $t3, $t3, 2  #(y1 *  F_C + (x1 + 1) * 4
+add $t3, $t3, $a1 #&frame[i]
+lw $t5, 0($t3) 
+
+#t3, $t4, $t6
+sub $t3, $t3, $t0 
+add $t4, $t3, $a1 #&window[i]
+lw $t6, 0($t4)
+
+sra $t5,$t6,31   
+xor $t6,$t6,$t5   
+sub $t6,$t6,$t5
+
+add $t7, $t7, $t6
+
+slti $t5, $t2, 3
+beq $t5, $zero, loop2_1 #if(count == 3)
+addi $t1, $t1, 1
+addi $t2, $t2, 1
+j loop2
+loop2_1:
+add $t2, $zero, $zero
+addi $t0, $t0, 1
+lw $t1 8($s2) #x1
+j loop2
+
+exitloop2:
+
+
+#if(exit)
+lw $t0, 0($s4)
+beq $t0, $zero, while
+
+#end function
+jr $ra
 
 
 
