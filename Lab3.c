@@ -69,23 +69,22 @@ int main()
 //        {0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 3, 4, 5, 6}};
     
    
-    
-    int block[WINDOW_R][WINDOW_C];
-    //int F = FRAME; int W = WINDOW;
+    //The block
+    int x1, x2, y1, y2; //s2
     
     int sss = 0;
     int SAD;
-    int minSAD = 500;
-    int c = 0, r = 0;
-    bool exit = false;
-    bool right = false;
-    bool down = false;
-    bool up = false;
-    bool left = false;
-    int Rmaxbound = FRAME_C + 1;
-    int Dmaxbound = FRAME_R + 1;
-    int Lminbound = -1;
-    int Uminbound = 0;
+    int minSAD = 500; //s0
+    int c = 0, r = 0; //s3
+    bool exit = false; //s4
+    bool right = false; //s4
+    bool down = false; //s4
+    bool up = false; //s4
+    bool left = false; //s4
+    int Rmaxbound = FRAME_C + 1; //s1
+    int Dmaxbound = FRAME_R + 1; //s1
+    int Lminbound = -1; //s1
+    int Uminbound = 0; //s1
     
     //to exit
     int countforexit = -1;
@@ -93,27 +92,20 @@ int main()
     int sumforexit = 0;
     int A, B, C, D;
     
-    
     //initilizing block
-    for(int i = 0; i < WINDOW_R; i++){ //y
-        for(int j = 0; j < WINDOW_C; j++){ //x
-            block[i][j] = frame[i][j];
-        }
-    }
+    y1 = 0; y2 = WINDOW_R;
+    x1 = 0; x2 = WINDOW_C;
     
-    //initial position
-    int y1 = 0; int y2 = WINDOW_R;
-    int x1 = 0; int x2 = WINDOW_C;
     
     if(FRAME_C > WINDOW_C){ //Frame size = Window size
         right = true;
     }
+    
     else if (FRAME_R > WINDOW_R){
         down = true;
     }
     
     while(exit == false && countforexit != 999){
-    
     
     A = y1 * 1000;
     B = y2 * 100;
@@ -125,7 +117,7 @@ int main()
     sumforexit = A + B + C + D;
         
     //reach the middle
-    for (int i = 0; i < countforexit+1; i++) {
+    for (int i = 0; i < countforexit + 1; i++) {
     
     if (check[i] == sumforexit){
         exit = true;
@@ -140,9 +132,9 @@ int main()
         
     //calclating SAD
     SAD = 0;
-    for(int i = 0; i < WINDOW_R; i++){ //y
-        for(int j = 0; j < WINDOW_C; j++){ //x
-            sss = abs(block[i][j] - window[i][j]);
+    for(int i = y1; i < y2; i++){ //y
+        for(int j = x1; j < x2; j++){ //x
+            sss = abs(frame[i][j] - window[i-y1][j-x1]);
             SAD = SAD + sss;
         }
     }
@@ -217,20 +209,7 @@ int main()
         }
     }
         
-    //getting next block
-    int blocki = 0;
-    int blockj = 0;
-    for(int i = y1; i < y2; i++){ //y
-        for(int j = x1; j < x2; j++){ //x
-            //printf("%d %d %d %d", blocki, blockj, i, j);
-            block[blocki][blockj] = frame[i][j];
-            blockj++;
-            if (blockj == WINDOW_C){
-                blockj = 0;
-                blocki++;
-            }
-        }
-    }
+    
         
         
     }//while
@@ -243,9 +222,9 @@ int main()
 
     //current block
     int count = 0;
-    for(int i = 0; i < WINDOW_R; i++){ //y
-    for(int j = 0; j < WINDOW_C; j++){ //x
-        printf("%d ", block[i][j]);
+    for(int i = y1; i < y2; i++){ //y
+    for(int j = x1; j < x2; j++){ //x
+        printf("%d ", frame[i][j]);
         ++count;
         if (count == WINDOW_C){
             printf("\n");
