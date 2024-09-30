@@ -544,36 +544,36 @@ main:
    
     # Start test 5
     ############################################################
-    la      $a0, asize5     # 1st parameter: address of asize5[0]
-    la      $a1, frame5     # 2nd parameter: address of frame5[0]
-    la      $a2, window5    # 3rd parameter: address of window5[0] 
+   # la      $a0, asize5     # 1st parameter: address of asize5[0]
+    #la      $a1, frame5     # 2nd parameter: address of frame5[0]
+    #la      $a2, window5    # 3rd parameter: address of window5[0] 
 
-    jal     vbsme           # call function
-    jal     print_result    # print results to console
+   # jal     vbsme           # call function
+    #jal     print_result    # print results to console
     ############################################################
-    # End of test 5
+     #End of test 5
 
    
     # Start test 6 
     ############################################################
-    la      $a0, asize6     # 1st parameter: address of asize6[0]
-    la      $a1, frame6     # 2nd parameter: address of frame6[0]
-    la      $a2, window6    # 3rd parameter: address of window6[0] 
+   # la      $a0, asize6     # 1st parameter: address of asize6[0]
+   # la      $a1, frame6     # 2nd parameter: address of frame6[0]
+   # la      $a2, window6    # 3rd parameter: address of window6[0] 
 
-    jal     vbsme           # call function
-    jal     print_result    # print results to console
+   # jal     vbsme           # call function
+   # jal     print_result    # print results to console
     ############################################################
     # End of test 6
    
 
     # Start test 7
     ############################################################
-    la      $a0, asize7     # 1st parameter: address of asize7[0]
-    la      $a1, frame7     # 2nd parameter: address of frame7[0]
-    la      $a2, window7    # 3rd parameter: address of window7[0] 
+   # la      $a0, asize7     # 1st parameter: address of asize7[0]
+   # la      $a1, frame7     # 2nd parameter: address of frame7[0]
+   # la      $a2, window7    # 3rd parameter: address of window7[0] 
 
-    jal     vbsme           # call function
-    jal     print_result    # print results to console
+    #jal     vbsme           # call function
+    #jal     print_result    # print results to console
     ############################################################
     # End of test 7   
    
@@ -616,12 +616,12 @@ main:
    
     # Start test 11
     ############################################################
-    la      $a0, asize11     # 1st parameter: address of asize11[0]
-    la      $a1, frame11     # 2nd parameter: address of frame11[0]
-    la      $a2, window11    # 3rd parameter: address of window11[0]   
+   # la      $a0, asize11     # 1st parameter: address of asize11[0]
+   # la      $a1, frame11     # 2nd parameter: address of frame11[0]
+   # la      $a2, window11    # 3rd parameter: address of window11[0]   
 
-    jal     vbsme           # call function
-    jal     print_result    # print results to console
+   # jal     vbsme           # call function
+   # jal     print_result    # print results to console
     ############################################################
     # End of test 11  
    
@@ -640,12 +640,12 @@ main:
 
     # Start test 13
     ############################################################
-    la      $a0, asize13     # 1st parameter: address of asize13[0]
-    la      $a1, frame13     # 2nd parameter: address of frame13[0]
-    la      $a2, window13    # 3rd parameter: address of window13[0]   
+   # la      $a0, asize13     # 1st parameter: address of asize13[0]
+    #la      $a1, frame13     # 2nd parameter: address of frame13[0]
+   # la      $a2, window13    # 3rd parameter: address of window13[0]   
 
-    jal     vbsme           # call function
-    jal     print_result    # print results to console
+    #jal     vbsme           # call function
+    #jal     print_result    # print results to console
     ############################################################
     # End of test 13  
    
@@ -782,7 +782,7 @@ vbsme:
     
     
     
- # array[R][C] = (R * Array_C + (C + 1)) * 4 
+ # array[R][C] = (R * Array_C) * 4 
  # exmple of 4x4 array 
  # array[2][2] = (2 * 4 + 3) * 4 = 44 --> which is the 11th element
  
@@ -796,7 +796,7 @@ check: .word 1:1000
 .text
 
 #Setting minSAD to a large number
-addi, $s0, $zero, 1000 #minSAD = 1000
+addi, $s0, $zero, 2000 #minSAD = 2000
 
 la $s1, bound #Gettign the bound 
 
@@ -818,7 +818,7 @@ sw $t0, 4($s2) #block[1] = W_R
 
 #Setting blockx2
 lw $t0, 12($a0) #t0 = W_C
-sw $t0, 12($s2) #block[3] = W_C
+sw $t0, 12($s2) #block[3] = W_C 
 
 la $s3, index #Gettign the index
 la $s4, bool #Gettign the bool
@@ -869,8 +869,9 @@ sll $t2, $t0, 2
 add $t2, $t2, $s6 #&check[i]
 lw $t3, 0($t2)
 bne $t5, $t3, loop1_1
-addi $t6, $zero, 1
-sw $t6, 0($s4) 
+j exit
+#addi $t6, $zero, 1
+#sw $t6, 0($s4) 
 j exitloop1
 loop1_1:
 slt $t7, $t0, $t1 
@@ -879,7 +880,7 @@ addi $t0, $t0, 1
 j loop1
 
 exitloop1:
-sw $t5, 0($t4)
+sw $t5, 0($t4) #check[count] = sum
 
 lw $t0 0($s2) #y1
 lw $t1 8($s2) #x1
@@ -888,8 +889,8 @@ add $t2, $zero, $zero
 add $s7, $zero, $zero
 loop2:
 lw $t4, 4($s2) #y2
-addi $t4, $t4, 1 #y2+1
-beq $t0, $t4, exitloop2
+slt $t4, $t0 ,$t4
+beq $t4, $zero, exitloop2
 
 # array[R][C] = (R * Array_C + (C + 1)) * 4 
 #addi $t4, $t1, 1 #x1++
@@ -912,27 +913,148 @@ sub $t6,$t6,$t5
 
 add $t7, $t7, $t6
 
-slti $t5, $t2, 3
-beq $t5, $zero, loop2_1 #if(count == 3)
-addi $t1, $t1, 1
-addi $t2, $t2, 1
+lw $t5, 12($a0) #W_C
+addi $t5, $t5, -1
+slt $t5, $t2, $t5
+beq $t5, $zero, loop2_1 #if(count == W_C)
+addi $t1, $t1, 1 #j
+addi $t2, $t2, 1 #count
 addi $s7, $s7, 1
 j loop2
 loop2_1:
 add $t2, $zero, $zero
-addi $t0, $t0, 1
+addi $t0, $t0, 1 #i
 lw $t1 8($s2) #x1
 addi $s7, $s7, 1
 j loop2
 
+#but t7
 exitloop2:
+slt $t0, $t7, $s0
+beq $t0, $zero, right
+add $s0, $zero, $t7 #chaning minSAD
+lw $t1, 0($s2) #get y1
+lw $t2, 8($s2) #get x1
+sw $t1, 0($s3) #set r
+sw $t2, 4($s3) #set c
+#j exit #debug minSum
 
+right: 
+#lw $t0, 0($s4) #check exit
+#bne $t0, $zero, exit #exit from while loop
 
-#if(exit)
-lw $t0, 0($s4)
-beq $t0, $zero, while
+lw $t1, 4($s4) #right
+beq $t1, $zero, down #jump to down
+lw  $t0, 8($s2) #x1
+lw  $t3, 12($s2) #x2
+addi $t2, $t3, 1
+lw $t4, 0($s1)
+bne $t2, $t4, rightadd
+addi, $t4, $t4, -1 #Rmaxbound--
+sw $t4, 0($s1)
+sw $t1, 8($s4) #down = true
+add $t1, $zero, $zero 
+sw $t1, 4($s4) #right = false
+j down
 
+rightadd:
+addi $t0, $t0, 1
+addi $t3, $t3, 1
+sw $t0, 8($s2)
+sw $t3, 12($s2)
+j while
+
+down:
+lw $t1, 8($s4) #down
+beq $t1, $zero, left #jump to left
+lw  $t0, 0($s2) #y1
+lw  $t3, 4($s2) #y2
+addi $t2, $t3, 1
+lw $t4, 4($s1) #Dmaxbound
+bne $t2, $t4, downadd
+addi, $t4, $t4, -1 #Dmaxbound--
+sw $t4, 4($s1)
+sw $t1, 12($s4) #left = true
+add $t1, $zero, $zero 
+sw $t1, 8($s4) #down = false
+j left
+
+downadd:
+addi $t0, $t0, 1
+addi $t3, $t3, 1
+sw $t0, 0($s2)
+sw $t3, 4($s2)
+j while
+
+left:
+lw $t1, 12($s4) #left
+beq $t1, $zero, up #jump to up
+lw  $t0, 8($s2) #x1
+lw  $t3, 12($s2) #x2
+addi $t2, $t0, -1
+lw $t4, 8($s1) #Lmaxbound
+bne $t2, $t4, leftsub
+addi, $t4, $t4, 1 #Lmaxbound++
+sw $t4, 8($s1)
+sw $t1, 16($s4) #up = true
+add $t1, $zero, $zero 
+sw $t1, 12($s4) #left = false
+j up
+
+leftsub:
+addi $t0, $t0, -1
+addi $t3, $t3, -1
+sw $t0, 8($s2)
+sw $t3, 12($s2)
+j while
+
+up:
+lw $t1, 16($s4) #up
+beq $t1, $zero, while #jump to agin
+lw  $t0, 0($s2) #y1
+lw  $t3, 4($s2) #y2
+lw  $t5, 8($s2) #x1
+lw  $t6, 12($s2) #x2
+addi $t2, $t0, -1
+lw $t4, 12($s1) #Umaxbound
+bne $t2, $t4, upsub
+addi, $t4, $t4, 1 #Umaxbound++
+sw $t4, 12($s1)
+sw $t1, 4($s4) #right = true
+add $t1, $zero, $zero 
+sw $t1, 16($s4) #up = false
+addi $t5, $t5, 1
+addi $t6, $t6, 1
+sw $t5, 8($s2)
+sw $t6, 12($s2)
+j while
+
+upsub:
+addi $t0, $t0, -1 
+addi $t3, $t3, -1
+sw $t0, 0($s2)
+sw $t3, 4($s2)
+j while
+
+exit:
+#add $v0, $zero, $s0 #debug minSum
+lw $v0, 0($s3)
+lw $v1, 4($s3)
 #end function
+li $t0, 0
+li $t1, 0
+sw $t1, 8($s1)
+sw $t0, 12($s1)
+sw $t0, 0($s2)
+sw $t0, 8($s2)
+sw $t0, 0($s4)
+sw $t0, 4($s4)
+sw $t0, 8($s4)
+sw $t0, 12($s4)
+sw $t0, 16($s4)
+
 jr $ra
 
 
+
+   
