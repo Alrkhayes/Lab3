@@ -105,7 +105,7 @@ int main()
         down = true;
     }
     
-    while(exit == false && countforexit != 999){
+    while(exit == false){
     
     A = y1 * 1024;
     B = y2 * 128;
@@ -121,7 +121,6 @@ int main()
     
     if (check[i] == sumforexit){
         exit = true;
-       // if(up == true){printf("..\n");}
         break;
     }
     }//for
@@ -148,62 +147,61 @@ int main()
     
     //moving right
     if (right && !exit){
-    x1++;
-    x2++;
-        if (x2 == Rmaxbound){
-            x1--;
-            x2--;
-            
+        if ((x2 + 1) == Rmaxbound){
             Rmaxbound--;
             right = false;
             down = true; //start down
 
         }
+        else{
+            x1++;
+            x2++;
+        }
     }
     
     //moving down
     if (down && !exit){
-    y1++;
-    y2++;
-        if (y2 == Dmaxbound){
-            y1--;
-            y2--;
+        if ((y2+1) == Dmaxbound){
             
             Dmaxbound--;
             down = false;
             left = true; //start left
 
         }
+        else{
+            y1++;
+            y2++;
+        }
     }
 
     //moving left
     if (left && !exit){
-    x1--;
-    x2--;
-        if (x1 == Lminbound){
-            x1++;
-            x2++;
+        if ((x1-1) == Lminbound){
             Lminbound++;
             
             left = false;
             up = true; //start up
          
         }
+        else{
+            x1--;
+            x2--;
+        }
     }
 
     //moving up
     if (up && !exit){
-    y1--;
-    y2--;
-        if (y1 == Uminbound){
-            y1++;
-            y2++;
+        if ((y1-1) == Uminbound){
             Uminbound++; //smaller bound
             
             up = false;
             right = true; //start right
             x1++;
             x2++;
+        }
+        else{
+            y1--;
+            y2--;
         }
     }
         
