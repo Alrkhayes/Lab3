@@ -1,6 +1,6 @@
 #  Fall 2024
-#  Team Members:    
-#  % Effort    :   
+#  Team Members:    Mohammed Alrkhayes, Allen Leinberger, Yaolei Bian
+#  % Effort    :   33.3% , 33.3%, 33.3%
 #
 # ECE369A,  
 # 
@@ -789,7 +789,6 @@ vbsme:
  .data
 bound: .word 0, 0, -1, 0 #s1 = Rmaxbound, Dmaxbound, Lminbound, Uminbound 
 block: .word 0, 0, 0, 0 #s2 = blocky1, blocky2, blockx1, blockx2
-index: .word 0, 0 #s3 = r, c the index of the minSAD
 bool: .word 0, 0, 0, 0, 0 #s4 = exit, right, down, left, up
 check: .word 1:30
     
@@ -820,7 +819,7 @@ sw $t0, 4($s2) #block[1] = W_R
 lw $t0, 12($a0) #t0 = W_C
 sw $t0, 12($s2) #block[3] = W_C 
 
-la $s3, index #Gettign the index
+#la $s3, index #Gettign the index
 la $s4, bool #Gettign the bool
 
 add $s5, $zero,$zero #count
@@ -856,7 +855,6 @@ sll $t2, $t2, 4
 sll $t4, $s5, 2
 add $t4, $t4, $s6 #&check[count]
 sw $zero, 0($t4) #check[count] = 0
-#addi $s5, $s5, 1 #count++
 
 add $t5, $t0, $t1
 add $t5, $t5, $t2
@@ -897,7 +895,6 @@ slt $t4, $t0 ,$t4
 beq $t4, $zero, exitloop2
 
 # array[R][C] = (R * Array_C + (C + 1)) * 4 
-#addi $t4, $t1, 1 #x1++
 lw $t3, 4($a0) #Get F_C
 mul $t3,$t3,$t0 #y1 * F_C
 add $t3, $t3, $t1 #(y1 *  F_C + x1)
@@ -937,15 +934,10 @@ exitloop2:
 slt $t0, $t7, $s0
 beq $t0, $zero, right
 add $s0, $zero, $t7 #chaning minSAD
-lw $t1, 0($s2) #get y1
-lw $t2, 8($s2) #get x1
-sw $t1, 0($s3) #set r
-sw $t2, 4($s3) #set c
-#j exit #debug minSum
+lw $v0, 0($s2) #y1
+lw $v1, 8($s2) #x1
 
 right: 
-#lw $t0, 0($s4) #check exit
-#bne $t0, $zero, exit #exit from while loop
 
 lw $t1, 4($s4) #right
 beq $t1, $zero, down #jump to down
@@ -1040,11 +1032,8 @@ sw $t0, 0($s2)
 sw $t3, 4($s2)
 j while
 
-exit:
-#add $v0, $zero, $s0 #debug minSum
-lw $v0, 0($s3)
-lw $v1, 4($s3)
 #end function
+exit:
 li $t0, 0
 li $t1, -1
 sw $t1, 8($s1)
